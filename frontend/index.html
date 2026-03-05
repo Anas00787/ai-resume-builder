@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI Resume Builder</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+h2{
+text-align:center;
+}
+
+input,textarea{
+width:100%;
+padding:8px;
+margin:5px 0;
+border:1px solid #aaa;
+border-radius:4px;
+}
+
+button{
+padding:10px 20px;
+margin-top:10px;
+background:black;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.resume{
+margin-top:auto;
+padding:20px;
+border:2px solid black;
+width: 800px;
+}
+
+.photo{
+text-align:center;
+margin-bottom:10px;
+}
+
+.photo img{
+width:120px;
+height:120px;
+object-fit:cover;
+border:2px solid black;
+}
+
+.section{
+border:1px solid black;
+margin-top:10px;
+padding:10px;
+}
+
+.section h3{
+margin:0;
+border-bottom:1px solid black;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>AI Resume Builder</h2>
+
+<input id="name" placeholder="Full Name">
+
+<input id="role" placeholder="Job Role">
+
+<input id="email" placeholder="Email">
+
+<input id="phone" placeholder="Mobile Number">
+
+<input id="address" placeholder="Address">
+
+<input id="linkedin" placeholder="LinkedIn">
+
+<input type="file" id="photo">
+
+<textarea id="summary" placeholder="Professional Summary"></textarea>
+
+<textarea id="skills" placeholder="Skills"></textarea>
+
+<textarea id="experience" placeholder="Experience"></textarea>
+
+<textarea id="education" placeholder="Education"></textarea>
+
+<textarea id="projects" placeholder="Projects"></textarea>
+
+<textarea id="hobbies" placeholder="Hobbies"></textarea>
+
+<button onclick="generateResume()">Generate Resume</button>
+
+<button onclick="downloadPDF()">Download PDF</button>
+
+
+<div id="resume" class="resume">
+
+<div class="photo">
+<img id="preview">
+</div>
+
+<div class="section">
+<h3>Name</h3>
+<p id="rname"></p>
+</div>
+
+<div class="section">
+<h3>Job Role</h3>
+<p id="rrole"></p>
+</div>
+
+<div class="section">
+<h3>Contact</h3>
+<p id="rcontact"></p>
+</div>
+
+<div class="section">
+<h3>Professional Summary</h3>
+<p id="rsummary"></p>
+</div>
+
+<div class="section">
+<h3>Skills</h3>
+<p id="rskills"></p>
+</div>
+
+<div class="section">
+<h3>Experience</h3>
+<p id="rexperience"></p>
+</div>
+
+<div class="section">
+<h3>Education</h3>
+<p id="reducation"></p>
+</div>
+
+<div class="section">
+<h3>Projects</h3>
+<p id="rprojects"></p>
+</div>
+
+<div class="section">
+<h3>Hobbies</h3>
+<p id="rhobbies"></p>
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+
+let img="";
+
+document.getElementById("photo").addEventListener("change",function(e){
+
+const reader=new FileReader();
+
+reader.onload=function(){
+
+img=reader.result;
+
+document.getElementById("preview").src=img;
+
+};
+
+reader.readAsDataURL(e.target.files[0]);
+
+});
+
+
+function generateResume(){
+
+document.getElementById("rname").innerText=
+document.getElementById("name").value;
+
+document.getElementById("rrole").innerText=
+document.getElementById("role").value;
+
+document.getElementById("rcontact").innerText=
+"Email: "+document.getElementById("email").value+
+" | Phone: "+document.getElementById("phone").value+
+" | Address: "+document.getElementById("address").value+
+" | LinkedIn: "+document.getElementById("linkedin").value;
+
+document.getElementById("rsummary").innerText=
+document.getElementById("summary").value;
+
+document.getElementById("rskills").innerText=
+document.getElementById("skills").value;
+
+document.getElementById("rexperience").innerText=
+document.getElementById("experience").value;
+
+document.getElementById("reducation").innerText=
+document.getElementById("education").value;
+
+document.getElementById("rprojects").innerText=
+document.getElementById("projects").value;
+
+document.getElementById("rhobbies").innerText=
+document.getElementById("hobbies").value;
+
+}
+async function downloadPDF(){
+
+const element = document.getElementById("resume");
+
+const canvas = await html2canvas(element,{
+scale:2
+});
+
+const imgData = canvas.toDataURL("image/png");
+
+const { jsPDF } = window.jspdf;
+
+const pdf = new jsPDF("p","mm","a4");
+
+const pageWidth = 210;
+
+const pageHeight = 295;
+
+const imgWidth = pageWidth;
+
+const imgHeight = canvas.height * imgWidth / canvas.width;
+
+pdf.addImage(imgData,'PNG',0,0,imgWidth,imgHeight);
+
+pdf.save("resume.pdf");
+
+}
+
+
+// sab input aur textarea select karega
+const fields = document.querySelectorAll("input, textarea");
+
+// typing hote hi save karega
+fields.forEach(field => {
+  field.addEventListener("input", function() {
+    localStorage.setItem(field.id, field.value);
+  });
+});
+
+// page open hone par data wapas fill karega
+window.onload = function(){
+  fields.forEach(field => {
+    const saved = localStorage.getItem(field.id);
+    if(saved){
+      field.value = saved;
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
